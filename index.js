@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const dns = require('dns');
 const app = express();
 
 // Basic Configuration
@@ -9,6 +10,7 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 
+app.use(bodyParser.urlencoded({extended: false}))
 app.use('/public', express.static(`${process.cwd()}/public`));
 
 app.get('/', function(req, res) {
@@ -22,7 +24,7 @@ app.get('/api/hello', function(req, res) {
 
 const links = []
 let id = 0
-app.use(bodyParser.urlencoded({extended: false}))
+ 
 app.post('app/shorturl',(req,res) => {
   const { url } = req.body;
   console.log("hello")
@@ -48,6 +50,7 @@ app.post('app/shorturl',(req,res) => {
 app.get('app/shorturl/:id', (req, res) => {
   const { id } = req.params
   const shortURL = links.find(l => l.short_url === id)
+  console.log(shortURL)
 
   if (shortURL) {
     return res.redirect(shortURL.original_url)
