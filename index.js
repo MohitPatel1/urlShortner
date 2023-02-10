@@ -4,6 +4,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 // const dns = require('dns');
 const app = express();
+const links = []
+let id = 0
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -35,13 +37,50 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get('/api/shorturl/:id', function(req, res) {
-  const { id } = req.params
-  console.log(id)
-  res.json({ greeting: 'hai API' });
-});
-const links = []
-let id = 0
+// app.get('/api/shorturl/:id', function(req, res) {
+//   const { id } = req.params
+//   console.log(id)
+//   res.json({ greeting: 'hai API' });
+// });
+
+app.post('/api/shorturl', bodyParser.urlencoded({extended: false}),(req,res) => {
+  let inputUrl = req.body.url
+  console.log(links);
+  id++;
+  links.push({
+    original_url : inputUrl,
+    short_url: `${id}`
+  })
+  res.json({
+    original_url : inputUrl,
+    short_url: `${id}`
+  })
+})
+
+app.get('/api/shorturl/:id',(req,res) => {
+  console.log("haii")
+  // console.log(req)
+  const id = req.params.id
+  console.log(typeof(id), "type of id")
+  // console.log(links, "all links")
+  const url = links.find(link => link.short_url === id)
+  // console.log(url, "url object")
+  if(url){
+    console.log(url.original_url)
+    console.log(typeof(url.original_url))
+    res.redirect(url.original_url)
+  }else{
+    res.json({error: "no short url"})
+  }
+})
+
+// app.get('/api/shorturl/id',(req,res)=>{
+//   res.json({
+//     hello: 'id'
+//   });
+// })
+
+
  
 // app.post('/api/shorturl', bodyParser.urlencoded({extended: false}) ,(req,res) => {
 //   const inputUrl  = req.body['url'];
